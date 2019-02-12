@@ -5,8 +5,9 @@ test()->
   hooray.
 
 start() ->
-  %spawn(double, loop, X).
-  register(double,spawn_link(fun() -> loop() end)).
+  %spawn_link???
+  register(double,spawn(fun() -> loop() end)).
+  %process_flag(trap_exit, true).
 
 double(X)->
   rpc(X).
@@ -26,8 +27,8 @@ loop() ->
       loop();
     {From,Other}   ->
       From ! {self(), {error,Other}},
-      io:format("Input is ~p is not valid",[Other]),
-      erlang:error(badarg),
-      %trap exit
-      loop()
+      io:format("Input is ~p is not valid.~n",[Other]),
+      exit(erlang:error(badarg))
+      %{'EXIT', double, erlang:error(badarg)}->
+
   end.
