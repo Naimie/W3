@@ -17,6 +17,7 @@ pmap_any_tagged(F, L) ->
     spawn(fun() -> do_f(S, Ref, F, I) end)
                 end, L),
 %% gather the results
+ % io:format("Hello ~p~n",[L]),
   report(length(L),Ref,[],L).
 
 
@@ -34,6 +35,6 @@ report(0, _, L1, L2)->
 report(N,Ref,L1, L2)->
   receive
     {Ref,Ret} ->
-      %io:format("~p~n",[{Ref,Ret}]),
+      io:format("~p~n",[{Ref,Ret,L1}]),
       report(N-1,Ref, [Ret|L1], L2)
   end.
