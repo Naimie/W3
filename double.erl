@@ -2,33 +2,33 @@
 -compile(export_all).
 
 test()->
+  %To test 3.1
+  %In the console write:
+  % c(double).
+  % double:start().
+  % whereis(double) ! 3.  = Input times 2 = 6
+  % whereis(double) ! y.  = Error message as process crashes
+  % whereis(double) ! 3.  = Exception error as process has died.
   hooray.
 
-start() ->
-  Pid = spawn(fun() -> loop() end),
-  register(double, Pid),
+
+start()->
+  Pid = spawn(fun() -> loop() end ),
+  register(double,Pid),
   Pid.
-  %process_flag(trap_exit, true).
 
-double(X)->
-  rpc(X).
+%sleep(T)->
+%  %sleep for T milliseconds
 
-rpc(Request) ->
-  double ! {self(), Request},
+loop()->
   receive
-    {_Pid, Response} ->
-      Response
+     X ->
+        Y =2*X,
+        io:format("Input times 2 = ~p~n",[Y]),
+        loop();
+
+%  after T ->
+%    true
   end.
 
-loop() ->
-  receive
-    {From, X} when is_integer(X) ->
-      From ! {self(), X*2},
-      loop();
-    {From,Other}   ->
-      From ! {self(), {error,Other}},
-      io:format("Input is ~p is not valid.~n",[Other]),
-      exit(erlang:error(badarg))
-      %{'EXIT', double, erlang:error(badarg)}->
 
-  end.
