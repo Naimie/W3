@@ -25,7 +25,7 @@ loop()->
      X ->
         Y =2*X,
         io:format("Input times 2 = ~p~n",[Y]),
-        loop();
+        loop()
 
 %  after T ->
 %    true
