@@ -8,15 +8,19 @@ test()->
 %I'm assuming I should start N processes and send the first message to the first process that sends a message to the second process and so on
 start(N,M)->
   %spawn the parent function
-  Parent = spawn(fun()-> p_loop() end),
+  S = self(),
+  Parent = spawn(fun()-> p_loop(S) end),
   %call the create function to create N processes
   Pids = create_ps(N,[]),
   io:format("Pids: ~p~n",[Pids]),
   %find the first element in the list of processes
   Child = lists:nth(1,Pids),
   %send the first message of = to the first process in the ring
-  Child ! {self(),{Parent,{0,M,Pids}}}.
-  %p_loop(0).
+  Child ! {self(),{Parent,{0,M,Pids}}},
+  receive
+  X ->
+    X
+  end.
 
 %creates N processes and reverses the list returned so it's in the correct order
  create_ps(0,Pids) ->
@@ -27,18 +31,11 @@ start(N,M)->
 
 
 %parent loop
-p_loop()->
+p_loop(S)->
   receive
     {_From, {X, Pids}}->
-      %io:format("in Parent loop: ~p~n",[X]),
-      X,
       lists:foreach(fun(Y) -> exit(Y,kill) end, Pids),
-      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%does not return to start
-      io:format("~p~n",[X]),
-      % Cmd=X,
-      % Cmd,
-      p_loop()
-
+      S ! X
   end.
 
 %child process loop
